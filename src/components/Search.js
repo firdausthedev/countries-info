@@ -12,17 +12,17 @@ const InputStyle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 2rem;
+  margin-top: 1rem;
 
   input {
-    width: 40%;
+    width: 60%;
     height: 3rem;
     border-radius: 10px;
-    border: 1px solid black;
-    padding-left: 2rem;
-    font-size: 1.2rem;
+    border: none;
+    padding-left: 1rem;
     font-family: 'Manrope', sans-serif;
     outline: none;
+    background-color: #f8f4e0;
   }
 `;
 export default Search;

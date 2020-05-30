@@ -8,9 +8,11 @@ function App() {
   const [inputValue, setInputValue] = useState('');
   const [countriesName, setCountriesName] = useState([]);
   const [loading, setLoading] = useState(false);
+  console.log('1');
 
   useEffect(() => {
     getCountriesNames();
+    console.log('2');
   }, []);
 
   const getCountriesNames = async () => {
@@ -18,7 +20,6 @@ function App() {
     try {
       const res = await axios.get(`https://restcountries.eu/rest/v2/all`);
       setCountriesName(res.data);
-      console.log(res.data);
       setLoading(false);
     } catch (err) {
       console.log(err);
@@ -29,19 +30,21 @@ function App() {
     const inputText = e.target.value;
     setInputValue(inputText);
   };
-  const newCountryList = countriesName.filter(
-    (c) => c.name.toLowerCase().includes(inputValue.toLowerCase()) || c.name.includes(inputValue)
+  const filteredCountriesName = countriesName.filter(
+    (c) => c.name.toLowerCase().includes(inputValue.toLowerCase()) || c.name.includes(inputValue) // filtered whether user typed with lowercase or uppercase
   );
 
   return (
-    <div>
+    <AppStyle>
+      {console.log('3')}
       <GlobalStyle />
+      <h1>Countries Name</h1>
       <Search inputValue={inputValue} onChange={onChange} />
       <CardListStyle>
-        {!loading && newCountryList.map((c, index) => <Card key={index} name={c.name} img={c.flag} countryInfo={c} />)}
-        {newCountryList.length === 0 && !loading && <p>No country found..</p>}
+        {!loading ? filteredCountriesName.map((c, index) => <Card key={index} countryInfo={c} />) : <h2>Loading...</h2>}
+        {!filteredCountriesName.length && !loading && <p>No country found..</p>}
       </CardListStyle>
-    </div>
+    </AppStyle>
   );
 }
 
@@ -54,19 +57,26 @@ const GlobalStyle = createGlobalStyle`
 
 body {
   font-family: 'Manrope', sans-serif;
-  font-size: 100%;
+  background-color: #e5c0a1;
+}
+`;
+
+const AppStyle = styled.div`
+  h1 {
+    text-align: center;
+    margin-top: 1rem;
+    color: #df3459;
   }
 `;
 
 const CardListStyle = styled.div`
+  background: #f0e9c9;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-
-  padding: 2rem 4rem;
-  margin: 2rem 4rem;
-  border: 2px solid black;
+  padding: 2rem 2rem;
+  margin: 1rem 2rem;
   border-radius: 10px;
 `;
 export default App;
