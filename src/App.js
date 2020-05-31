@@ -5,27 +5,29 @@ import { connect } from 'react-redux';
 import Card from './components/Card';
 import Search from './components/Search';
 import axios from 'axios';
-import { setSearchField } from './actions';
+import { setSearchField, setLoading } from './actions';
 
 const mapStateToProps = (state) => {
   return {
     searchField: state.searchField,
+    loading: state.loading,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onChange: (e) => dispatch(setSearchField(e.target.value)),
+    setLoading: (isLoading) => dispatch(setLoading(isLoading)),
   };
 };
 
-function App({ searchField, onChange }) {
+function App({ searchField, onChange, setLoading, loading }) {
   const [countriesName, setCountriesName] = useState([]);
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getCountriesNames();
-    console.log('2');
+    // console.log(loading);
   }, []);
 
   const getCountriesNames = async () => {
@@ -45,7 +47,6 @@ function App({ searchField, onChange }) {
 
   return (
     <AppStyle>
-      {console.log('3')}
       <GlobalStyle />
       <h1>Countries Name</h1>
       <Search inputValue={searchField} onChange={onChange} />
