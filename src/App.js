@@ -1,14 +1,27 @@
+/* eslint-disable no-labels */
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
+import { connect } from 'react-redux';
 import Card from './components/Card';
 import Search from './components/Search';
 import axios from 'axios';
+import { setSearchField } from './actions';
 
-function App() {
-  const [inputValue, setInputValue] = useState('');
+const mapStateToProps = (state) => {
+  return {
+    searchField: state.searchField,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onChange: (e) => dispatch(setSearchField(e.target.value)),
+  };
+};
+
+function App({ searchField, onChange }) {
   const [countriesName, setCountriesName] = useState([]);
   const [loading, setLoading] = useState(false);
-  console.log('1');
 
   useEffect(() => {
     getCountriesNames();
@@ -26,12 +39,8 @@ function App() {
     }
   };
 
-  const onChange = (e) => {
-    const inputText = e.target.value;
-    setInputValue(inputText);
-  };
   const filteredCountriesName = countriesName.filter(
-    (c) => c.name.toLowerCase().includes(inputValue.toLowerCase()) || c.name.includes(inputValue) // filtered whether user typed with lowercase or uppercase
+    (c) => c.name.toLowerCase().includes(searchField.toLowerCase()) || c.name.includes(searchField) // filtered whether user typed with lowercase or uppercase
   );
 
   return (
@@ -39,7 +48,7 @@ function App() {
       {console.log('3')}
       <GlobalStyle />
       <h1>Countries Name</h1>
-      <Search inputValue={inputValue} onChange={onChange} />
+      <Search inputValue={searchField} onChange={onChange} />
       <CardListStyle>
         {!loading ? filteredCountriesName.map((c, index) => <Card key={index} countryInfo={c} />) : <h2>Loading...</h2>}
         {!filteredCountriesName.length && !loading && <p>No country found..</p>}
@@ -58,6 +67,7 @@ const GlobalStyle = createGlobalStyle`
 body {
   font-family: 'Manrope', sans-serif;
   background-color: #e5c0a1;
+  line-height:1.2;
 }
 `;
 
@@ -79,4 +89,4 @@ const CardListStyle = styled.div`
   margin: 1rem 2rem;
   border-radius: 10px;
 `;
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);

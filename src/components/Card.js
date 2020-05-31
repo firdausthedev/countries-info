@@ -10,15 +10,15 @@ const Card = ({ countryInfo }) => {
   };
 
   return (
-    <CardStyle onClick={displayMore}>
-      <img src={countryInfo.flag} alt='flag' />
+    <CardStyle>
+      <img src={countryInfo.flag} alt={`${countryInfo.name}-flag`} onClick={displayMore} />
       <p id='country-name'>{countryInfo.name}</p>
 
       {showMore && (
         <>
           <p>Capital : {countryInfo.capital}</p>
           <p>Region : {countryInfo.region}</p>
-          <p>Populations : {countryInfo.population}</p>
+          <p>Populations : {countryInfo.population.toLocaleString()}</p>
           <p>
             Languages :{' '}
             {countryInfo.languages.map((l, index) => (
@@ -49,10 +49,10 @@ const CardStyle = styled.div`
 
   :hover {
     transform: scale(1.1);
-    cursor: pointer;
   }
   img {
     max-width: 9rem;
+    cursor: pointer;
   }
 
   #country-name {
