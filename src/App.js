@@ -23,11 +23,10 @@ const mapDispatchToProps = (dispatch) => {
 
 function App({ searchField, onChange, setLoading, loading }) {
   const [countriesName, setCountriesName] = useState([]);
-  // const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getCountriesNames();
-    // console.log(loading);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getCountriesNames = async () => {
@@ -48,7 +47,7 @@ function App({ searchField, onChange, setLoading, loading }) {
   return (
     <AppStyle>
       <GlobalStyle />
-      <h1>Countries Name</h1>
+      <h1>Countries Info</h1>
       <Search inputValue={searchField} onChange={onChange} />
       <CardListStyle>
         {!loading ? filteredCountriesName.map((c, index) => <Card key={index} countryInfo={c} />) : <h2>Loading...</h2>}
@@ -68,7 +67,7 @@ const GlobalStyle = createGlobalStyle`
 body {
   font-family: 'Manrope', sans-serif;
   background-color: #e5c0a1;
-  line-height:1.2;
+  line-height: 1.2;
 }
 `;
 

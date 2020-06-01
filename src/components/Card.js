@@ -6,12 +6,12 @@ const Card = ({ countryInfo }) => {
 
   const displayMore = () => {
     setShowMore(!showMore);
-    document.title = countryInfo.name;
+    document.title = 'Countries-Info | ' + countryInfo.name;
   };
 
   return (
     <CardStyle>
-      <img src={countryInfo.flag} alt={`${countryInfo.name}-flag`} onClick={displayMore} />
+      <img src={countryInfo.flag} alt='flag' onClick={displayMore} />
       <p id='country-name'>{countryInfo.name}</p>
 
       {showMore && (
