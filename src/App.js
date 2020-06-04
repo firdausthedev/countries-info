@@ -18,7 +18,10 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onChange: (e) => dispatch(setSearchField(e.target.value)),
+    onChange: (e) => {
+      dispatch(setSearchField(e.target.value));
+    },
+
     setLoading: (isLoading) => dispatch(setLoading(isLoading)),
   };
 };
@@ -50,8 +53,10 @@ function App({ searchField, onChange, setLoading, loading }) {
 
   const numOfCountries = filteredCountriesName.length;
   const startIndex = (currentPage - 1) * PAGE_SIZE;
-  const newCountriesList = _(filteredCountriesName).slice(startIndex).take(PAGE_SIZE).value();
-
+  let newCountriesList = _(filteredCountriesName).slice(startIndex).take(PAGE_SIZE).value();
+  if (filteredCountriesName.length < 50 && newCountriesList.length < 50) {
+    newCountriesList = _(filteredCountriesName).slice(0).take(PAGE_SIZE).value();
+  }
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };

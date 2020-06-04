@@ -6,7 +6,6 @@ const Pagination = ({ length, pageSize, currentPage, onPageChange }) => {
   const pagesCount = Math.ceil(length / pageSize);
   if (pagesCount === 1) return null;
   const pages = _.range(1, pagesCount + 1);
-  console.log(currentPage);
   return (
     <PaginationStyle>
       <ul>
