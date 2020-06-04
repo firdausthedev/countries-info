@@ -5,7 +5,9 @@ import { connect } from 'react-redux';
 import Card from './components/Card';
 import Search from './components/Search';
 import axios from 'axios';
+import _ from 'lodash';
 import { setSearchField, setLoading } from './actions';
+import Pagination from './components/Pagination';
 
 const mapStateToProps = (state) => {
   return {
@@ -22,7 +24,9 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 function App({ searchField, onChange, setLoading, loading }) {
-  const [countriesName, setCountriesName] = useState([]);
+  const [countriesList, setCountriesName] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 50;
 
   useEffect(() => {
     getCountriesNames();
@@ -40,9 +44,17 @@ function App({ searchField, onChange, setLoading, loading }) {
     }
   };
 
-  const filteredCountriesName = countriesName.filter(
+  const filteredCountriesName = countriesList.filter(
     (c) => c.name.toLowerCase().includes(searchField.toLowerCase()) || c.name.includes(searchField) // filtered whether user typed with lowercase or uppercase
   );
+
+  const numOfCountries = filteredCountriesName.length;
+  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const newCountriesList = _(filteredCountriesName).slice(startIndex).take(PAGE_SIZE).value();
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
     <AppStyle>
@@ -50,9 +62,15 @@ function App({ searchField, onChange, setLoading, loading }) {
       <h1>Countries Info</h1>
       <Search inputValue={searchField} onChange={onChange} />
       <CardListStyle>
-        {!loading ? filteredCountriesName.map((c, index) => <Card key={index} countryInfo={c} />) : <h2>Loading...</h2>}
-        {!filteredCountriesName.length && !loading && <p>No country found..</p>}
+        {!loading ? newCountriesList.map((c, index) => <Card key={index} countryInfo={c} />) : <h2>Loading...</h2>}
+        {!newCountriesList.length && !loading && <p>No country found..</p>}
       </CardListStyle>
+      <Pagination
+        length={numOfCountries}
+        pageSize={PAGE_SIZE}
+        onPageChange={handlePageChange}
+        currentPage={currentPage}
+      />
     </AppStyle>
   );
 }
