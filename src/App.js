@@ -1,58 +1,46 @@
 /* eslint-disable no-labels */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { connect } from 'react-redux';
 import Card from './components/Card';
 import Search from './components/Search';
-import axios from 'axios';
 import _ from 'lodash';
-import { setSearchField, setLoading } from './actions';
+import { setSearchField, setPageNumber, requestCountries } from './actions';
 import Pagination from './components/Pagination';
+
+const PAGE_SIZE = 50;
 
 const mapStateToProps = (state) => {
   return {
-    searchField: state.searchField,
-    loading: state.loading,
+    searchField: state.searchCountries.searchField,
+    isPending: state.requestCountries.isPending,
+    countries: state.requestCountries.countries,
+    error: state.requestCountries.error,
+    pageNumber: state.changePageNumber.pageNumber,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onChange: (e) => {
-      dispatch(setSearchField(e.target.value));
-    },
-
-    setLoading: (isLoading) => dispatch(setLoading(isLoading)),
+    onChange: (e) => dispatch(setSearchField(e.target.value)),
+    setCurrentPage: (pageNumber) => dispatch(setPageNumber(pageNumber)),
+    onRequestCountries: () => dispatch(requestCountries()),
   };
 };
 
-function App({ searchField, onChange, setLoading, loading }) {
-  const [countriesList, setCountriesName] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 50;
-
+function App(props) {
+  const { searchField, onChange, setCurrentPage, pageNumber, onRequestCountries, countries, isPending } = props;
   useEffect(() => {
-    getCountriesNames();
+    onRequestCountries();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getCountriesNames = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`https://restcountries.eu/rest/v2/all`);
-      setCountriesName(res.data);
-      setLoading(false);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const filteredCountriesName = countriesList.filter(
+  const filteredCountriesName = countries.filter(
     (c) => c.name.toLowerCase().includes(searchField.toLowerCase()) || c.name.includes(searchField) // filtered whether user typed with lowercase or uppercase
   );
 
   const numOfCountries = filteredCountriesName.length;
-  const startIndex = (currentPage - 1) * PAGE_SIZE;
+  const startIndex = (pageNumber - 1) * PAGE_SIZE;
   let newCountriesList = _(filteredCountriesName).slice(startIndex).take(PAGE_SIZE).value();
   if (filteredCountriesName.length < 50 && newCountriesList.length < 50) {
     newCountriesList = _(filteredCountriesName).slice(0).take(PAGE_SIZE).value();
@@ -67,14 +55,14 @@ function App({ searchField, onChange, setLoading, loading }) {
       <h1>Countries Info</h1>
       <Search inputValue={searchField} onChange={onChange} />
       <CardListStyle>
-        {!loading ? newCountriesList.map((c, index) => <Card key={index} countryInfo={c} />) : <h2>Loading...</h2>}
-        {!newCountriesList.length && !loading && <p>No country found..</p>}
+        {!isPending ? newCountriesList.map((c, index) => <Card key={index} countryInfo={c} />) : <h2>Loading...</h2>}
+        {!newCountriesList.length && !isPending && <p>No country found..</p>}
       </CardListStyle>
       <Pagination
         length={numOfCountries}
         pageSize={PAGE_SIZE}
         onPageChange={handlePageChange}
-        currentPage={currentPage}
+        currentPage={pageNumber}
       />
     </AppStyle>
   );
